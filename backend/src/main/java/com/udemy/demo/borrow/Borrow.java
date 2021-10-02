@@ -1,4 +1,4 @@
-package com.udemy.demo.borrows;
+package com.udemy.demo.borrow;
 
 import com.udemy.demo.book.Book;
 import com.udemy.demo.user.User;
