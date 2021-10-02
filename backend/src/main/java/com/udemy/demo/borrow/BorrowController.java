@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -27,18 +28,15 @@ public class BorrowController {
     @Autowired
     UserRepository userRepository;
 
-    @GetMapping(value = "/borrows")
-    public ResponseEntity getMyBorrows() {
-        Integer userConnectedId = BookController.getUserConnectedId();
-        List<Borrow> borrows = borrowRepository.findByBorrowerId(userConnectedId);
-
+    @GetMapping("/borrows")
+    public ResponseEntity list(Principal principal) {
+        List<Borrow> borrows = borrowRepository.findByBorrowerId(BookController.getUserConnectedId(principal));
         return new ResponseEntity(borrows, HttpStatus.OK);
-
     }
 
     @PostMapping("/borrows/{bookId}")
-    public ResponseEntity create(@PathVariable("bookId") String bookId) {
-        Integer userConnectedId = BookController.getUserConnectedId();
+    public ResponseEntity create(@PathVariable("bookId") String bookId, Principal principal) {
+        Integer userConnectedId = BookController.getUserConnectedId(principal);
         Optional<User> borrower = userRepository.findById(userConnectedId);
         Optional<Book> book = bookRepository.findById(Integer.valueOf(bookId));
 
@@ -59,20 +57,22 @@ public class BorrowController {
     }
 
     @DeleteMapping("/borrows/{borrowId}")
-    public ResponseEntity deleteBorrow(@PathVariable("borrowId") String borrowId) {
+    public ResponseEntity delete(@PathVariable("borrowId") String borrowId) {
+
         Optional<Borrow> borrow = borrowRepository.findById(Integer.valueOf(borrowId));
-        if(!borrow.isPresent()) {
+        if(borrow.isEmpty()) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
-        Borrow borrow1 = borrow.get();
-        borrow1.setCloseDate(LocalDate.now());
-        borrowRepository.save(borrow1);
 
-        Book book = borrow1.getBook();
+        Borrow borrowEntity = borrow.get();
+        borrowEntity.setCloseDate(LocalDate.now());
+        borrowRepository.save(borrowEntity);
+
+        Book book = borrowEntity.getBook();
         book.setStatus(BookStatus.FREE);
         bookRepository.save(book);
 
-
-        return new ResponseEntity( HttpStatus.NO_CONTENT);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
+
 }
