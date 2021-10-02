@@ -1,12 +1,10 @@
-package com.udemy.demo.borrows;
+package com.udemy.demo.borrow;
 
-import com.udemy.demo.book.Category;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 
 @RestController
 public class BorrowController {
