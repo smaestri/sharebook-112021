@@ -28,6 +28,14 @@ public class Borrow {
         return askDate;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public void setAskDate(LocalDate askDate) {
         this.askDate = askDate;
     }
