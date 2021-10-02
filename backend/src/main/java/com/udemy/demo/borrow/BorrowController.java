@@ -27,10 +27,13 @@ public class BorrowController {
     @Autowired
     UserRepository userRepository;
 
-    @GetMapping("/borrows")
-    public ResponseEntity list() {
-        List<Borrow> borrows = borrowRepository.findByBorrowerId(BookController.getUserConnectedId());
+    @GetMapping(value = "/borrows")
+    public ResponseEntity getMyBorrows() {
+        Integer userConnectedId = BookController.getUserConnectedId();
+        List<Borrow> borrows = borrowRepository.findByBorrowerId(userConnectedId);
+
         return new ResponseEntity(borrows, HttpStatus.OK);
+
     }
 
     @PostMapping("/borrows/{bookId}")
@@ -56,22 +59,20 @@ public class BorrowController {
     }
 
     @DeleteMapping("/borrows/{borrowId}")
-    public ResponseEntity delete(@PathVariable("borrowId") String borrowId) {
-
+    public ResponseEntity deleteBorrow(@PathVariable("borrowId") String borrowId) {
         Optional<Borrow> borrow = borrowRepository.findById(Integer.valueOf(borrowId));
-        if(borrow.isEmpty()) {
+        if(!borrow.isPresent()) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
+        Borrow borrow1 = borrow.get();
+        borrow1.setCloseDate(LocalDate.now());
+        borrowRepository.save(borrow1);
 
-        Borrow borrowEntity = borrow.get();
-        borrowEntity.setCloseDate(LocalDate.now());
-        borrowRepository.save(borrowEntity);
-
-        Book book = borrowEntity.getBook();
+        Book book = borrow1.getBook();
         book.setStatus(BookStatus.FREE);
         bookRepository.save(book);
 
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
-    }
 
+        return new ResponseEntity( HttpStatus.NO_CONTENT);
+    }
 }
