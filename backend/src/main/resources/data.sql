@@ -5,3 +5,5 @@ INSERT INTO category (label) VALUES ('Cuisine');
 INSERT INTO category (label) VALUES ('Bricolage');
 INSERT INTO category (label) VALUES ('Enfant');
 INSERT INTO category (label) VALUES ('Sciences');
+
+INSERT INTO user (first_name, last_name) VALUES ('MyFirstName', 'MyLastName');
