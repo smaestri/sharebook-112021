@@ -27,58 +27,51 @@ public class BorrowController {
     @Autowired
     UserRepository userRepository;
 
-    @GetMapping(value = "/borrows")
-    public ResponseEntity getMyBorrows() {
-        Integer userConnectedId = BookController.getUserConnectedId();
-        List<Borrow> borrows = borrowRepository.findByBorrowerId(userConnectedId);
-
+    @GetMapping("/borrows")
+    public ResponseEntity list() {
+        List<Borrow> borrows = borrowRepository.findByBorrowerId(BookController.getUserConnectedId());
         return new ResponseEntity(borrows, HttpStatus.OK);
-
     }
 
     @PostMapping("/borrows/{bookId}")
-    public ResponseEntity createBorrow(@PathVariable("bookId") String bookId) {
+    public ResponseEntity create(@PathVariable("bookId") String bookId) {
         Integer userConnectedId = BookController.getUserConnectedId();
-        Optional<User> borrower = userRepository.findById(Integer.valueOf(userConnectedId));
+        Optional<User> borrower = userRepository.findById(userConnectedId);
         Optional<Book> book = bookRepository.findById(Integer.valueOf(bookId));
 
-        if(borrower.isPresent() && book.isPresent()) {
-
+        if(borrower.isPresent() && book.isPresent() && book.get().getStatus().equals(BookStatus.FREE)) {
             Borrow borrow = new Borrow();
-            borrow.setBook(book.get());
+            Book bookEntity = book.get();
+            borrow.setBook(bookEntity);
             borrow.setBorrower(borrower.get());
-            borrow.setLender(book.get().getUser());
+            borrow.setLender(bookEntity.getUser());
             borrow.setAskDate(LocalDate.now());
             borrowRepository.save(borrow);
 
-            book.get().setStatus(BookStatus.BORROWED);
-            bookRepository.save(book.get());
+            bookEntity.setStatus(BookStatus.BORROWED);
+            bookRepository.save(bookEntity);
             return new ResponseEntity(HttpStatus.CREATED);
-
         }
-
         return new ResponseEntity(HttpStatus.BAD_REQUEST);
-
     }
 
     @DeleteMapping("/borrows/{borrowId}")
-    public ResponseEntity deleteBorrow(@PathVariable("borrowId") String borrowId) {
+    public ResponseEntity delete(@PathVariable("borrowId") String borrowId) {
+
         Optional<Borrow> borrow = borrowRepository.findById(Integer.valueOf(borrowId));
-        if(!borrow.isPresent()) {
+        if(borrow.isEmpty()) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
-        Borrow borrow1 = borrow.get();
-        borrow1.setCloseDate(LocalDate.now());
-        borrowRepository.save(borrow1);
 
-        Book book = borrow1.getBook();
+        Borrow borrowEntity = borrow.get();
+        borrowEntity.setCloseDate(LocalDate.now());
+        borrowRepository.save(borrowEntity);
+
+        Book book = borrowEntity.getBook();
         book.setStatus(BookStatus.FREE);
         bookRepository.save(book);
 
-
-        return new ResponseEntity( HttpStatus.NO_CONTENT);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
-
-
 
 }
