@@ -1,6 +1,6 @@
 import React from 'react'
 import axios from 'axios';
-import { Link, useHistory } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import Book from './Book'
 import "./MyBooks.scss"
 
@@ -39,7 +39,7 @@ const fetchBooks = () => {
       </div>
       ))}
     </div>
-    <Link to="/addBook"><button className="btn btn-primary btn-sm">Nouveau livre</button></Link>
+    <button className="btn btn-primary btn-sm" onClick={()=> history.push("/addBook/")}>Nouveau livre</button>
   </div>
 
   )
