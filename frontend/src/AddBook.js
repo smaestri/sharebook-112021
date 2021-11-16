@@ -7,7 +7,11 @@ import "./AddBook.scss"
 export default function AddBook() {
 
     let { bookId } = useParams();
-    const [bookData, setBookData] = useState({})
+    const [bookData, setBookData] = useState({
+        title: '',
+        categoryId: ''
+
+    })
     const [categoriesData, setCategoriesData] = useState([])
     const history = useHistory();
 

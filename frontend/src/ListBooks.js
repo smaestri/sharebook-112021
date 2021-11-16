@@ -32,7 +32,7 @@ class ListBooks extends React.Component {
       <h1>Livres disponibles</h1>
       <div className="list-container">
         {this.state.books.length === 0 ? "Pas de livres disponibles" : null}
-        {this.state.books.map(book => (<div className="list-book-container">
+        {this.state.books.map((book, key) => (<div key={key} className="list-book-container">
           <Book title={book.title} category={book.category.label} lender={`${book.user.firstName} ${book.user.lastName}`} />
           <button className="btn btn-primary btn-sm" onClick={() => this.borrowBook(book.id)}>Emprunter</button>
         </div>
