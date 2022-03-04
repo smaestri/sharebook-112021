@@ -1,3 +1,6 @@
+#  Ce repository n'est plus maintenu. Merci d'utiliser celui-ci : https://github.com/smaestri/sharebook : nombreuses librairies mises à jour. Merci!
+
+
 # sharebook
 
 Code de la formation en ligne Udemy *Développeur Web Fullstack avec Spring et React*
